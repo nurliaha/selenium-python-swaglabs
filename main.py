@@ -1,3 +1,5 @@
+from time import sleep
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -26,10 +28,24 @@ def get_inventory_price(params):
         inventory_price.append(price)
     return inventory_price
 
+
+def get_item_total(elm):
+    item_total = elm.find_element(By.CLASS_NAME, "summary_subtotal_label").text
+    item_total_price_string = item_total.replace("Item total: $", "")
+    prices = float(item_total_price_string)
+    return (prices)
+
+
+def get_tax_item(elm1):
+    tax = elm1.find_element(By.CLASS_NAME, "summary_tax_label").text
+    tax_price_string = tax.replace("Tax: $", "")
+    price_tax = float(tax_price_string)
+    return (price_tax)
+
+
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
 driver.maximize_window()
 driver.get("https://www.saucedemo.com/")
-
 
 # TC001 As a user I can Login to the Swag Labs
 driver.find_element(By.ID, "user-name").send_keys("standard_user")
@@ -43,7 +59,6 @@ if act_title == exp_title:
 else:
     print("Login Test Failed")
 
-
 # TC002 As a User I can see the details of product
 driver.find_element(By.ID, "item_4_title_link").click()
 actDetailsProd = driver.find_element(By.XPATH, "//div[text()='Sauce Labs Backpack']").text
@@ -55,7 +70,6 @@ if actDetailsProd == expDetailsProd:
 else:
     print("Details Product Failed")
 
-
 # TC003 As a User I can back to the list products
 driver.find_element(By.ID, "back-to-products").click()
 
@@ -66,7 +80,6 @@ if actProducts == expProducts:
     print("List Product Passed")
 else:
     print("List Product Failed")
-
 
 # TC004 As a USer , I can filter the products from Z to A
 driver.find_element(By.CLASS_NAME, "product_sort_container").click()
@@ -84,7 +97,6 @@ if sorted_item_names == sorted(init_item_names, reverse=True):
 else:
     print("Sort List Product Failed")
 
-
 # TC005 As a USer , I can filter the products from low price to high price
 driver.find_element(By.CLASS_NAME, "product_sort_container").click()
 driver.find_element(By.CSS_SELECTOR, "option[value='lohi']").click()
@@ -95,7 +107,6 @@ if sorted_items_price == sorted(init_item_price):
     print("Sort Low price Product Passed")
 else:
     print("Sort Low price Failed")
-
 
 # TC006 As a USer , I can filter the products from high price to low price
 driver.find_element(By.CLASS_NAME, "product_sort_container").click()
@@ -108,5 +119,54 @@ if sorted_items_price == sorted(init_item_price, reverse=True):
 else:
     print("Sort high price Failed")
 
+# TC007 As a USer , I can add to cart the products
+driver.find_element(By.ID, "add-to-cart-sauce-labs-backpack").click()
+driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+driver.find_element(By.XPATH, "//span[text()='Your Cart']").is_displayed()
+items = driver.find_element(By.XPATH, "//div[text()='Sauce Labs Backpack']").text
+actual_items = "Sauce Labs Backpack"
+if items == actual_items:
+    print("List Cart Product Passed")
+else:
+    print("List Cart Product Failed")
 
+# TC008 As a USer , I can checkout the cart
+driver.find_element(By.ID, "checkout").click()
+firstName = driver.find_element(By.ID, "first-name").send_keys("Randy")
+driver.find_element(By.ID, "last-name").send_keys("Pangalila")
+driver.find_element(By.ID, "postal-code").send_keys("123763")
+driver.find_element(By.ID, "continue").click()
+driver.get("https://www.saucedemo.com/checkout-step-two.html")
+title_checkout = driver.find_element(By.CLASS_NAME, "title").text
+act_title_checkout = "Checkout: Overview"
+if title_checkout == act_title_checkout:
+    print("Checkout overview Passed")
+else:
+    print("Checkout overview Failed")
+
+# TC009 As a user, I can see the price total
+item_total = get_item_total(driver)
+item_tax = get_tax_item(driver)
+finaltotal = item_total + item_tax
+exp_price_total = "Total: $" + str(finaltotal)
+act_price_total = driver.find_element(By.CLASS_NAME, "summary_info_label.summary_total_label").text
+if exp_price_total == act_price_total:
+    print("Value Price Total Passed")
+else:
+    print("Value Price Total Failed")
+driver.find_element(By.ID, "finish").click()
+# time.sleep(2000)
+driver.get("https://www.saucedemo.com/checkout-complete.html")
+driver.find_element(By.XPATH, "//span[text()='Checkout: Complete!']").is_displayed()
+driver.find_element(By.XPATH, "//h2[text()='Thank you for your order!']").is_displayed()
+driver.find_element(By.ID, "back-to-products").click()
+
+
+# T010 As a user, I want to remove the items
+driver.find_element(By.XPATH, "//span[text()='Products']").is_displayed()
+driver.find_element(By.ID, "add-to-cart-sauce-labs-fleece-jacket").click()
+driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+driver.find_element(By.XPATH, "//span[text()='Your Cart']").is_displayed()
+driver.find_element(By.ID, "remove-sauce-labs-fleece-jacket").click()
+driver.find_element(By.CLASS_NAME, "removed_cart_item").is_displayed()
 driver.close()
