@@ -169,4 +169,15 @@ driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
 driver.find_element(By.XPATH, "//span[text()='Your Cart']").is_displayed()
 driver.find_element(By.ID, "remove-sauce-labs-fleece-jacket").click()
 driver.find_element(By.CLASS_NAME, "removed_cart_item").is_displayed()
+driver.find_element(By.ID,"continue-shopping").click()
+
+#T011 As a user, I can Access burger menu Swag Labs
+driver.find_element(By.ID, "react-burger-menu-btn").click()
+driver.find_element(By.ID, "inventory_sidebar_link").is_displayed()
+driver.find_element(By.ID, "logout_sidebar_link").is_displayed()
+driver.find_element(By.ID, "reset_sidebar_link").is_displayed()
+print("Burger Menu Passed")
+
 driver.close()
+
+
