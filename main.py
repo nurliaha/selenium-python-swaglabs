@@ -1,3 +1,4 @@
+import time
 from time import sleep
 
 from selenium import webdriver
@@ -174,9 +175,19 @@ driver.find_element(By.ID,"continue-shopping").click()
 #T011 As a user, I can Access burger menu Swag Labs
 driver.find_element(By.ID, "react-burger-menu-btn").click()
 driver.find_element(By.ID, "inventory_sidebar_link").is_displayed()
+driver.find_element(By.ID, "about_sidebar_link").is_displayed()
 driver.find_element(By.ID, "logout_sidebar_link").is_displayed()
 driver.find_element(By.ID, "reset_sidebar_link").is_displayed()
 print("Burger Menu Passed")
+
+#T012 As a user, I can Access About from Burger Menu
+time.sleep(2)
+driver.find_element(By.ID, "about_sidebar_link").click()
+time.sleep(2)
+driver.find_element(By.XPATH, "//p[text()='The world relies on your code. Test on thousands of different device, browser, and OS configurations–anywhere, any time.']").is_displayed()
+
+# titles = driver.find_element(By.XPATH, ".MuiTypography-root.MuiTypography-label.css-egh7vz[text()='AUTOMATED TESTING & ERROR MONITORING SOLUTIONS']").is_displayed()
+# driver.execute_script("arguments[0].scrollIntoView(true)", titles)
 
 driver.close()
 
