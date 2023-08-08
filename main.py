@@ -1,6 +1,4 @@
 import time
-from time import sleep
-
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
@@ -180,15 +178,34 @@ driver.find_element(By.ID, "logout_sidebar_link").is_displayed()
 driver.find_element(By.ID, "reset_sidebar_link").is_displayed()
 print("Burger Menu Passed")
 
-#T012 As a user, I can Access About from Burger Menu
+# T012 As a user, I can Access About from Burger Menu
 time.sleep(2)
 driver.find_element(By.ID, "about_sidebar_link").click()
 time.sleep(2)
 driver.find_element(By.XPATH, "//p[text()='The world relies on your code. Test on thousands of different device, browser, and OS configurations–anywhere, any time.']").is_displayed()
+driver.quit()
 
-# titles = driver.find_element(By.XPATH, ".MuiTypography-root.MuiTypography-label.css-egh7vz[text()='AUTOMATED TESTING & ERROR MONITORING SOLUTIONS']").is_displayed()
-# driver.execute_script("arguments[0].scrollIntoView(true)", titles)
+#T013 As a user, I can Logout the web
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+driver.get("https://www.saucedemo.com/")
+driver.find_element(By.ID, "user-name").send_keys("standard_user")
+driver.find_element(By.ID, "password").send_keys("secret_sauce")
+driver.find_element(By.ID, "login-button").click()
+time.sleep(2)
+driver.find_element(By.ID, "react-burger-menu-btn").click()
+time.sleep(2)
+driver.find_element(By.ID, "logout_sidebar_link").is_displayed()
+driver.find_element(By.ID, "logout_sidebar_link").click()
+driver.find_element(By.CLASS_NAME,"login_logo").is_displayed()
+actual_logout = driver.find_element(By.CLASS_NAME,"login_logo").text
+expected_logout = "Swag Labs"
+if expected_logout == actual_logout:
+    print("Logout Passed")
+else:
+    print("Logout Failed")
 
-driver.close()
+driver.quit()
+
+
 
 
